@@ -8,3 +8,4 @@
         name: httpd
         state: '{{ "stopped" if is_container is defined and is_container else "restarted" }}'
       become: yes
+      when: ansible_distribution == 'Amazon' and ansible_service_mgr == 'upstart' or ansible_distribution == 'CentOS' and ansible_distribution_major_version == '6'
