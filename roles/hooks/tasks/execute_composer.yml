@@ -7,15 +7,19 @@
     optimize_autoloader: "{{ composer_optimize_autoloader }}"
     no_dev: "{{ composer_no_dev }}"
 
+- name: ANSISTRANO | HOOKS | Define apache2.4 config file path
+  set_fact:
+    apache_2_4_path_conf: /etc/httpd/conf/httpd.conf
+
 - name: ANSISTRANO | HOOKS | Get current DocumentRoot
-  shell: grep "^DocumentRoot" /etc/httpd/conf/httpd.conf | awk '{print $2}' | sed -e 's/^"//' -e 's/"$//'
+  shell: grep "^DocumentRoot" {{ apache_2_4_path_conf }} | awk '{print $2}' | sed -e 's/^"//' -e 's/"$//'
   become: yes
   ignore_errors: yes
   register: current_document_root
 
 - name: ANSISTRANO | HOOKS | Replace document root for Apache
   replace:
-    path: /etc/httpd/conf/httpd.conf
+    path: '{{ apache_2_4_path_conf }}'
     regexp: "{{ item.regexp }}"
     replace: "{{ item.replace }}"
   with_items:
@@ -60,16 +64,8 @@
     - regexp: ^;listen\.owner\s=\snobody$
       replace: listen.owner = {{ roles_common_apache_running_user }}
     - regexp: ^;listen.group\s=\snobody$
-      replace: listen.group = {{ roles_common_apache_running_user }}
+      replace: listen.group = {{ roles_common_apache_running_group }}
 
 - name: ANSISTRANO | HOOKS | Enable xdebug
-  replace:
-    path: /etc/php.d/15-xdebug.ini
-    regexp: '{{ item.regexp }}'
-    replace: '{{ item.replace }}'
-  with_items:
-    - regexp: ^;xdebug\.remote_enable\s=\s0$
-      replace: xdebug.remote_enable = 1
-    - regexp: ^;xdebug\.remote_connect_back\s=\s0$
-      replace: xdebug.remote_connect_back = 1
+  include_tasks: enable_xdebug.yml
   when: '"development" in group_names'

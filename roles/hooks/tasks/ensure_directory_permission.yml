@@ -4,7 +4,7 @@
     path: '{{ roles_common_home_directory }}'
     state: directory
     owner: '{{ roles_common_deploy_user }}'
-    group: '{{ roles_common_apache_running_user }}'
+    group: '{{ roles_common_apache_running_group }}'
     mode: 0710
 
 - name: ANSISTRANO | HOOKS | Ensure base directory and set SGID
@@ -12,5 +12,5 @@
     path: '{{ ansistrano_deploy_to }}'
     state: directory
     owner: '{{ roles_common_deploy_user }}'
-    group: '{{ roles_common_apache_running_user }}'
+    group: '{{ roles_common_apache_running_group }}'
     mode: 02775

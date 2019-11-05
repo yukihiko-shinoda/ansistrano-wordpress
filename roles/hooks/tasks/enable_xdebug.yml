@@ -1,0 +1,11 @@
+---
+- name: ANSISTRANO | HOOKS | Enable xdebug
+  replace:
+    path: /etc/php.d/15-xdebug.ini
+    regexp: '{{ item.regexp }}'
+    replace: '{{ item.replace }}'
+  with_items:
+    - regexp: ^;xdebug\.remote_enable\s=\s0$
+      replace: xdebug.remote_enable = 1
+    - regexp: ^;xdebug\.remote_connect_back\s=\s0$
+      replace: xdebug.remote_connect_back = 1
