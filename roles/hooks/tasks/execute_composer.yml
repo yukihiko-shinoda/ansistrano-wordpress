@@ -1,7 +1,7 @@
 ---
 - name: ANSISTRANO | HOOKS | Execute composer
   composer:
-#    command: update
+    # command: update
     working_dir: "{{ roles_common_document_root }}"
     prefer_dist: yes
     optimize_autoloader: "{{ composer_optimize_autoloader }}"
@@ -27,6 +27,14 @@
       replace: DocumentRoot "{{ roles_common_document_root }}"
     - regexp: ^<Directory\s"{{ current_document_root.stdout }}">$
       replace: <Directory "{{ roles_common_document_root }}">
+  become: yes
+  notify: restart apache
+
+- name: ANSISTRANO | HOOKS | Add timeout setting to prevent 504 error when initialize StaticPress2019
+  blockinfile:
+    path: '{{ apache_2_4_path_conf }}'
+    block: |
+      Timeout 600
   become: yes
   notify: restart apache
 
